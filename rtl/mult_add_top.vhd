@@ -36,7 +36,6 @@ entity mult_add_top is
     Port ( inA_multiplicand         : in STD_LOGIC_VECTOR (31 downto 0);
            inB_multiplier           : in STD_LOGIC_VECTOR (31 downto 0);
            inC_adder                : in STD_LOGIC_VECTOR (31 downto 0);
-           in_D                     : in STD_LOGIC_VECTOR (31 downto 0);
            clk                      : in STD_LOGIC;
            reset                    : in STD_LOGIC;
            result                   : out STD_LOGIC_VECTOR (47 downto 0)
