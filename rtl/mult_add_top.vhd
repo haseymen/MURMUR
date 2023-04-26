@@ -78,7 +78,7 @@ END COMPONENT;
 
 COMPONENT adder_dsp
   PORT (
-    CLK : IN STD_LOGIC;
+    --CLK : IN STD_LOGIC;
     PCIN : IN STD_LOGIC_VECTOR(47 DOWNTO 0);
     C : IN STD_LOGIC_VECTOR(47 DOWNTO 0);
     CONCAT : IN STD_LOGIC_VECTOR(47 DOWNTO 0);
@@ -122,7 +122,7 @@ multAlBh : dsp_macro_1
 
 adderResult : adder_dsp
   PORT MAP (
-    CLK => CLK,
+    --CLK => CLK,
     PCIN => result_00,
     C =>  x"0000" & result_01(15 downto 0) & x"0000",
     CONCAT => x"0000" & result_10(15 downto 0) & x"0000",

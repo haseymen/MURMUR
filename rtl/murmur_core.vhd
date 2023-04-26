@@ -41,14 +41,23 @@ entity murmur_core is
             seed_val            : in std_logic_vector(31 downto 0); -- seed supplied
             m_val               : in std_logic_vector(31 downto 0); -- m constant
             n_val               : in std_logic_vector(31 downto 0); -- n constant
-            result_temp         : out std_logic_vector(47 downto 0); -- murmur core output
             result_out          : out std_logic_vector(31 downto 0) -- murmur core output
      );
 end murmur_core;
 
 architecture Behavioral of murmur_core is
 
--------- multiplication core
+------------------------------------------------------------------------------------ signal declerations
+signal result_temp             :std_logic_vector(47 downto 0):=(others=>'0');
+signal result_mult1             :std_logic_vector(47 downto 0):=(others=>'0');
+signal result_mult2             :std_logic_vector(47 downto 0):=(others=>'0');
+signal result_mult3             :std_logic_vector(47 downto 0):=(others=>'0');
+signal result_rol15             :std_logic_vector(31 downto 0):=(others=>'0');
+signal result_rol13             :std_logic_vector(31 downto 0):=(others=>'0');
+signal result_xor1              :std_logic_vector(31 downto 0):=(others=>'0');
+
+
+------------------------------------------------------------------------------------ multiplication core
 component mult_add_top
     port( 
         inA_multiplicand         : in STD_LOGIC_VECTOR (31 downto 0);
@@ -61,7 +70,7 @@ component mult_add_top
 end component;
 
 
--------- rotation function
+------------------------------------------------------------------------------------ rotation function
 component rol_function
     generic(
         rotate_val : integer -- number of rotation
@@ -75,10 +84,9 @@ end component;
     
 begin
 
-
---------------------------------
+------------------------------------------------------------------------------------ 
 -- first multiplication
---------------------------------
+------------------------------------------------------------------------------------ 
 mult1: component mult_add_top
     port map(
         inA_multiplicand         => key_to_hash ,
@@ -86,12 +94,72 @@ mult1: component mult_add_top
         inC_adder                => x"00000000" ,
         clk                      => clk         ,
         reset                    => arst        ,
-        result                   => result_temp 
+        result                   => result_mult1 
     );
+
+
+------------------------------------------------------------------------------------ 
+-- ROL15
+------------------------------------------------------------------------------------ 
+rol15: component rol_function 
+    generic map(
+        rotate_val => 15
+    )
+    port map(
+        key_to_rotate        => result_mult1(31 downto 0),
+        result_rotation      => result_rol15
+    );
+    
+    
+------------------------------------------------------------------------------------ 
+-- second multiplication
+------------------------------------------------------------------------------------ 
+mult2: component mult_add_top
+    port map(
+        inA_multiplicand         => result_rol15 ,
+        inB_multiplier           => c2_val      ,
+        inC_adder                => x"00000000" ,
+        clk                      => clk         ,
+        reset                    => arst        ,
+        result                   => result_mult2 
+    );
+
+
+------------------------------------------------------------------------------------ 
+-- firs xor
+------------------------------------------------------------------------------------
+result_xor1 <= result_mult2(31 downto 0) XOR seed_val;
+
+
+------------------------------------------------------------------------------------ 
+-- ROL13
+------------------------------------------------------------------------------------ 
+rol13: component rol_function 
+    generic map(
+        rotate_val => 13
+    )
+    port map(
+        key_to_rotate        => result_xor1,
+        result_rotation      => result_rol13
+    );
+    
+    
+------------------------------------------------------------------------------------ 
+-- third multiplication and addition
+------------------------------------------------------------------------------------ 
+mult3: component mult_add_top
+    port map(
+        inA_multiplicand         => result_rol13    ,
+        inB_multiplier           => m_val           ,
+        inC_adder                => n_val           ,
+        clk                      => clk             ,
+        reset                    => arst            ,
+        result                   => result_temp  
+    );
+
+------------------------------------------------------------------------------------ 
+-- final value assignment
+------------------------------------------------------------------------------------ 
+result_out <= result_temp(31 downto 0);
+
 end Behavioral;
-
-
-
-
-
-
