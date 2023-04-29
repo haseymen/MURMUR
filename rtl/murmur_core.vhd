@@ -150,8 +150,8 @@ rol13: component rol_function
 mult3: component mult_add_top
     port map(
         inA_multiplicand         => result_rol13    ,
-        inB_multiplier           => m_val           ,
-        inC_adder                => n_val           ,
+        inB_multiplier           => n_val           ,
+        inC_adder                => m_val           ,
         clk                      => clk             ,
         reset                    => arst            ,
         result                   => result_temp  
