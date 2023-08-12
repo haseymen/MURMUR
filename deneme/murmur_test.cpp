@@ -1,6 +1,9 @@
 //#include "MurmurHash3.h"
 #include<iostream>
 using namespace std;
+#include <chrono>
+using namespace std::chrono;
+#include <time.h>
 
 void MurmurHash3_x86_32  ( const void * key, int len, void * out );
 
@@ -27,17 +30,78 @@ FORCE_INLINE uint32_t fmix32 ( uint32_t h )
   return h;
 }
 
+
+
+
 int main()
 {
     cout << "hello world\n";
     uint32_t out = 0x00000000;
-    uint8_t key[4]= {255,10,255,0}; //ters sırada
+    const uint8_t key[32][4]= {
+                        {255,255,255,255},
+                        {171,171,171,171},
+                        {255,255,255,255},
+                        {171,171,171,171},
+                        {255,255,255,255},
+                        {171,171,171,171},
+                        {255,255,255,255},
+                        {171,171,171,171},
+                        {255,255,255,255},
+                        {171,2,171,171},
+                        {255,255,255,255},
+                        {171,171,171,171},
+                        {255,255,255,255},
+                        {171,171,171,171},
+                        {255,255,255,255},
+                        {171,171,171,171},
+                        {255,255,255,255},
+                        {171,171,5,171},
+                        {255,255,255,255},
+                        {171,171,171,171},
+                        {255,255,255,255},
+                        {171,171,171,171},
+                        {255,255,255,255},
+                        {171,171,171,171},
+                        {255,255,255,255},
+                        {171,1,171,171},
+                        {255,255,255,255},
+                        {171,171,9,171},
+                        {255,255,255,255},
+                        {171,171,171,124},
+                        {255,255,52,255},
+                        {255,255,255,255}
+                        }; 
     int len = 4;
     int test = 4;
-    MurmurHash3_x86_32 ( key, len, &out);
+    
+    //auto start = high_resolution_clock::now();   
+
+    struct timespec begin2;
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &begin2);
+
+    for(int i = 0; i < 256*256*256*8 ; i++) 
+    {
+    MurmurHash3_x86_32 ( key[i%32], len, &out);
+    }
+
+    struct timespec end2;
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end2);
+    //auto stop = high_resolution_clock::now();
+
+
+    //auto duration = duration_cast<nanoseconds>(stop - start);
+    double time_spent2 = (end2.tv_sec - begin2.tv_sec) + (end2.tv_nsec - begin2.tv_nsec) / 1000000000.0;
+
+
     cout<<"result is ";
     cout<<hex<<out<<"\n";
-    scanf("%d", test);
+    //cout<<hex<<key[0]<<"\n";
+
+    //cout << duration.count() << endl;
+    printf("Time it took to execute (CPU TIME): %lf\n", time_spent2);
+    //scanf("%d", test);
+
+
     return 0;
 }
 
@@ -98,3 +162,5 @@ void MurmurHash3_x86_32 ( const void * key, int len,
 
   *(uint32_t*)out = h1;
 } 
+ 
+ //ters sırada
